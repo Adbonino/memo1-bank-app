@@ -59,6 +59,15 @@ public class AccountService {
         }
 
         Account account = accountRepository.findAccountByCbu(cbu);
+
+        if (sum >= 2000) {
+            if  (0.1 * sum > 500){
+                sum = sum + 500;
+            }else{
+                sum = sum * 1.1;
+            }
+        } 
+
         account.setBalance(account.getBalance() + sum);
         accountRepository.save(account);
 
