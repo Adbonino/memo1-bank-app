@@ -1,7 +1,11 @@
 package com.aninfo;
 
 import com.aninfo.model.Account;
+import com.aninfo.model.Transaction;
 import com.aninfo.service.AccountService;
+
+import io.swagger.models.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,10 +46,27 @@ public class Memo1BankApp {
 		return accountService.getAccounts();
 	}
 
+	@GetMapping("/transactions")
+	public Collection<Transaction> getTrasactions() {
+		return accountService.getTransactions();
+	}
+	
+    @GetMapping("/transactions/{cbu}/trasactions")
+	public Collection<Transaction> getTransactionsByCbu(@PathVariable Long cbu) {
+		//Collection<Transaction> txOptional = accountService.getTransactionsByCbu(cbu);
+		return accountService.getTransactionsByCbu(cbu);
+	} 
+
 	@GetMapping("/accounts/{cbu}")
 	public ResponseEntity<Account> getAccount(@PathVariable Long cbu) {
 		Optional<Account> accountOptional = accountService.findById(cbu);
 		return ResponseEntity.of(accountOptional);
+	}
+
+    @GetMapping("/transactions/{txid}")
+	public ResponseEntity<Transaction> getTransactionsccount(@PathVariable Long txid) {
+		Optional<Transaction> txOptional = accountService.findTxById(txid);
+		return ResponseEntity.of(txOptional);
 	}
 
 	@PutMapping("/accounts/{cbu}")
@@ -63,6 +84,12 @@ public class Memo1BankApp {
 	@DeleteMapping("/accounts/{cbu}")
 	public void deleteAccount(@PathVariable Long cbu) {
 		accountService.deleteById(cbu);
+	}
+
+	
+	@DeleteMapping("/transactions/{txid}")
+	public void deleteTransaction(@PathVariable Long txid) {
+		accountService.deleteTxById(txid);
 	}
 
 	@PutMapping("/accounts/{cbu}/withdraw")

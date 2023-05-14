@@ -5,8 +5,11 @@ import com.aninfo.exceptions.InsufficientFundsException;
 import com.aninfo.model.Account;
 import com.aninfo.model.Transaction;
 import com.aninfo.repository.AccountRepository;
+import com.aninfo.repository.TransactionRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
@@ -17,6 +20,8 @@ public class AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private TransactionRepository txRepository;
 
     public Account createAccount(Account account) {
         return accountRepository.save(account);
@@ -26,8 +31,20 @@ public class AccountService {
         return accountRepository.findAll();
     }
 
+    public Collection<Transaction> getTransactions() {
+        return txRepository.findAll();
+    }
+
+    public Collection<Transaction> getTransactionsByCbu(Long cbu){
+        return txRepository.findByCbu(cbu);
+    }
+     
     public Optional<Account> findById(Long cbu) {
         return accountRepository.findById(cbu);
+    }
+
+    public Optional<Transaction> findTxById(Long txid) {
+        return txRepository.findById(txid);
     }
 
     public void save(Account account) {
@@ -38,6 +55,10 @@ public class AccountService {
         accountRepository.deleteById(cbu);
     }
 
+    public void deleteTxById(Long txid) {
+        txRepository.deleteById(txid);
+    }
+      
     @Transactional
     public Account withdraw(Long cbu, Double sum) {
         Account account = accountRepository.findAccountByCbu(cbu);
@@ -50,7 +71,9 @@ public class AccountService {
         accountRepository.save(account);
         
         Transaction tx = new Transaction(cbu, 'W', sum);
+        txRepository.save(tx); 
 
+        
         return account;
     }
 
@@ -73,6 +96,8 @@ public class AccountService {
         } 
 
         Transaction tx = new Transaction(cbu, 'D', sum);
+        txRepository.save(tx); 
+        
         
         account.setBalance(account.getBalance() + sum);
         accountRepository.save(account);
